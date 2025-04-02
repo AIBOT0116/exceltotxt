@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel to TXT Converter</title>
+</head>
+<body>
+    <h1>Convert Excel to TXT</h1>
+    <input type="file" id="file-input" />
+    <button onclick="convertToText()">Convert to TXT</button>
+    <pre id="output"></pre>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+    <script>
+        function convertToText() {
+            const fileInput = document.getElementById('file-input');
+            const file = fileInput.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const data = e.target.result;
+                    const workbook = XLSX.read(data, { type: 'binary' });
+
+                    // Assuming we want the first sheet
+                    const sheetName = workbook.SheetNames[0];
+                    const sheet = workbook.Sheets[sheetName];
+
+                    // Convert sheet to an array of arrays
+                    const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                    
+                    // Convert the array to a plain text string with custom delimiter (#~#)
+                    let textContent = '';
+                    jsonData.forEach(row => {
+                        const formattedRow = row.map(cell => {
+                            if (cell instanceof Date) {
+                                // Optional: Format date cells if needed
+                                return formatDate(cell);
+                            }
+                            return cell;  // Return the cell as it is (string, number, etc.)
+                        }).join('#~#');  // Join columns with #~# instead of tab
+                        
+                        textContent += formattedRow + '\n'; // Add a new line after each row
+                    });
+
+                    // Display in the 'output' pre tag (for preview)
+                    document.getElementById('output').textContent = textContent;
+
+                    // Trigger download of the TXT file
+                    downloadTXT(textContent);
+                };
+                
+                reader.readAsBinaryString(file);
+            }
+        }
+
+        // Function to format date if needed
+        function formatDate(date) {
+            // Example: Convert Date to "MM/DD/YYYY" or any other format you prefer
+            const day = ("0" + date.getDate()).slice(-2);
+            const month = ("0" + (date.getMonth() + 1)).slice(-2);
+            const year = date.getFullYear();
+            return `${month}/${day}/${year}`;
+        }
+
+        // Function to download the TXT file
+        function downloadTXT(content) {
+            // Create a Blob with the content (text/plain type)
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob); // Create an object URL for the Blob
+            
+            // Create a temporary link to trigger the download
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'converted.txt';  // Specify the name of the file to download
+            a.click();  // Simulate a click to trigger the download
+            
+            // Clean up by revoking the object URL after the download
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

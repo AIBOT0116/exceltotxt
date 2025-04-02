@@ -48,8 +48,8 @@
                     // Display in the 'output' pre tag (for preview)
                     document.getElementById('output').textContent = textContent;
 
-                    // Trigger download of the TXT file
-                    downloadTXT(textContent);
+                    // Trigger download of the TXT file with the same name as the uploaded file
+                    downloadTXT(file, textContent);
                 };
                 
                 reader.readAsBinaryString(file);
@@ -66,7 +66,11 @@
         }
 
         // Function to download the TXT file
-        function downloadTXT(content) {
+        function downloadTXT(file, content) {
+            // Extract the file name without extension
+            const fileNameWithoutExtension = file.name.replace(/\.[^/.]+$/, '');
+            const outputFileName = fileNameWithoutExtension + '.txt'; // Change extension to .txt
+
             // Create a Blob with the content (text/plain type)
             const blob = new Blob([content], { type: 'text/plain' });
             const url = URL.createObjectURL(blob); // Create an object URL for the Blob
@@ -74,7 +78,7 @@
             // Create a temporary link to trigger the download
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'converted.txt';  // Specify the name of the file to download
+            a.download = outputFileName;  // Use the input file's name for the output file
             a.click();  // Simulate a click to trigger the download
             
             // Clean up by revoking the object URL after the download

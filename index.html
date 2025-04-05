@@ -1,89 +1,253 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Excel to TXT Converter</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECR Maker | Excel to TXT Converter</title>
+  <link rel="shortcut icon" href="https://convertico.com/favicon.ico" type="image/x-icon" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* For WebKit browsers */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      /* Track background */
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #007bff;
+      /* Scrollbar color */
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #0056b3;
+      /* On hover */
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f7fa;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    /* Drag & Drop Zone */
+    #drop-zone {
+      width: 100%;
+      max-width: 400px;
+      padding: 30px;
+      border: 2px dashed #aaa;
+      border-radius: 12px;
+      background-color: #fff;
+      text-align: center;
+      cursor: pointer;
+      margin-bottom: 20px;
+      transition: all 0.3s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Hover Effect */
+    #drop-zone:hover,
+    #drop-zone.dragover {
+      border-color: #007bff;
+      background-color: #e6f0ff;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    /* Icons */
+    i {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      vertical-align: middle;
+    }
+
+    .icon-upload {
+      margin-bottom: 10px;
+      background: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23007bff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17V11L7 13"></path><path d="M9 11L11 13"></path><path d="M22 10V15C22 20 20 22 15 22H9C4 22 2 20 2 15V9C2 4 4 2 9 2H14"></path><path d="M22 10H18C15 10 14 9 14 6V2L22 10Z"></path></svg>') center/contain no-repeat;
+    }
+
+    .icon-convert {
+      background: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11V17L11 15"></path><path d="M9 17L7 15"></path><path d="M22 10V15C22 20 20 22 15 22H9C4 22 2 20 2 15V9C2 4 4 2 9 2H14"></path><path d="M22 10H18C15 10 14 9 14 6V2L22 10Z"></path></svg>') center/contain no-repeat;
+    }
+
+    /* Convert Button */
+    button {
+      background-color: #007bff;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 10px;
+      width: 100%;
+      max-width: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    /* Progress Bar */
+    .progress-container {
+      width: 100%;
+      max-width: 200px;
+      height: 5px;
+      background: #ddd;
+      border-radius: 3px;
+      overflow: hidden;
+      margin: 20px 0;
+      display: none;
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 100%;
+      background: #007bff;
+      transition: width 1s ease-in-out;
+    }
+
+    /* Output Preview */
+    pre#output {
+      margin-top: 20px;
+      width: 100%;
+      max-width: 800px;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 0.95rem;
+    }
+  </style>
 </head>
+
 <body>
-    <h1>Convert Excel to TXT</h1>
-    <input type="file" id="file-input" />
-    <button onclick="convertToText()">Convert to TXT</button>
-    <pre id="output"></pre>
+  <h1>Convert Excel to TXT</h1>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
-    <script>
-        function convertToText() {
-            const fileInput = document.getElementById('file-input');
-            const file = fileInput.files[0];
+  <!-- Drag & Drop Area -->
+  <div id="drop-zone">
+    <i class="icon-upload"></i>
+    <p>Drag & drop Excel file here or click to browse</p>
+  </div>
+  <input type="file" id="file-input" accept=".xlsx, .xls">
 
-            if (file) {
-                const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    const data = e.target.result;
-                    const workbook = XLSX.read(data, { type: 'binary' });
+  <!-- Convert Button -->
+  <button onclick="convertToText()">
+    <i class="icon-convert"></i> Convert to TXT
+  </button>
 
-                    // Assuming we want the first sheet
-                    const sheetName = workbook.SheetNames[0];
-                    const sheet = workbook.Sheets[sheetName];
+  <!-- Progress Bar -->
+  <div class="progress-container">
+    <div class="progress-bar"></div>
+  </div>
 
-                    // Convert sheet to an array of arrays
-                    const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-                    
-                    // Convert the array to a plain text string with custom delimiter (#~#)
-                    let textContent = '';
-                    jsonData.forEach(row => {
-                        const formattedRow = row.map(cell => {
-                            if (cell instanceof Date) {
-                                // Optional: Format date cells if needed
-                                return formatDate(cell);
-                            }
-                            return cell;  // Return the cell as it is (string, number, etc.)
-                        }).join('#~#');  // Join columns with #~# instead of tab
-                        
-                        textContent += formattedRow + '\n'; // Add a new line after each row
-                    });
+  <!-- Output Preview -->
+  <pre id="output"></pre>
 
-                    // Display in the 'output' pre tag (for preview)
-                    document.getElementById('output').textContent = textContent;
+  <p style="margin: 20px;">Made With &#x2665;&#xfe0f; By Atul</p>
 
-                    // Trigger download of the TXT file with the same name as the uploaded file
-                    downloadTXT(file, textContent);
-                };
-                
-                reader.readAsBinaryString(file);
-            }
-        }
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@latest/dist/xlsx.full.min.js"></script>
+  <script>
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const progressBarContainer = document.querySelector('.progress-container');
+    const progressBar = document.querySelector('.progress-bar');
+    let selectedFile = null;
 
-        // Function to format date if needed
-        function formatDate(date) {
-            // Example: Convert Date to "MM/DD/YYYY" or any other format you prefer
-            const day = ("0" + date.getDate()).slice(-2);
-            const month = ("0" + (date.getMonth() + 1)).slice(-2);
-            const year = date.getFullYear();
-            return `${month}/${day}/${year}`;
-        }
+    dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.style.borderColor = "#007bff"; });
+    dropZone.addEventListener('dragleave', () => { dropZone.style.borderColor = "#aaa"; });
+    dropZone.addEventListener('drop', (e) => { e.preventDefault(); selectedFile = e.dataTransfer.files[0]; dropZone.innerHTML = `<i class="icon-upload"></i><p>Selected: ${selectedFile.name}</p>`; });
+    dropZone.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', (e) => { selectedFile = e.target.files[0]; dropZone.innerHTML = `<i class="icon-upload"></i><p>Selected: ${selectedFile.name}</p>`; });
 
-        // Function to download the TXT file
-        function downloadTXT(file, content) {
-            // Extract the file name without extension
-            const fileNameWithoutExtension = file.name.replace(/\.[^/.]+$/, '');
-            const outputFileName = fileNameWithoutExtension + '.txt'; // Change extension to .txt
+    function convertToText() {
+      if (!selectedFile) { alert("Please select an Excel file first."); return; }
+      progressBarContainer.style.display = 'block';
+      progressBar.style.width = '0%';
 
-            // Create a Blob with the content (text/plain type)
-            const blob = new Blob([content], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob); // Create an object URL for the Blob
-            
-            // Create a temporary link to trigger the download
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = outputFileName;  // Use the input file's name for the output file
-            a.click();  // Simulate a click to trigger the download
-            
-            // Clean up by revoking the object URL after the download
-            URL.revokeObjectURL(url);
-        }
-    </script>
+      setTimeout(() => progressBar.style.width = '33.33%', 1600);
+      setTimeout(() => progressBar.style.width = '66.66%', 3300);
+      setTimeout(() => {
+        progressBar.style.width = '100%';
+        setTimeout(() => { progressBarContainer.style.display = 'none'; processFile(); }, 500);
+      }, 5000);
+    }
+
+    function processFile() {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const workbook = XLSX.read(e.target.result, { type: 'binary' });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+        let textContent = jsonData.map(row => {
+          let newRow = [...row];
+
+          let col6 = parseFloat(row[5]) || 0;
+          let col7 = Math.round(col6 * 0.12);
+          let col8 = Math.round(col6 * 0.0833);
+          let col9 = col7 - col8;
+
+          newRow[6] = col7;
+          newRow[7] = col8;
+          newRow[8] = col9;
+
+          return newRow.map(cell => (typeof cell === 'number' ? cell.toFixed(0) : cell)).join('#~#');
+        }).join('\n');
+
+        document.getElementById('output').textContent = textContent;
+        downloadTXT(selectedFile, textContent);
+      };
+      reader.readAsBinaryString(selectedFile);
+    }
+
+    function downloadTXT(file, content) {
+      const fileName = file.name.replace(/\.[^/.]+$/, '') + '.txt';
+      const blob = new Blob([content], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = fileName;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+  </script>
 </body>
+
 </html>

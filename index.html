@@ -160,7 +160,7 @@
 
 <body>
   <h1>Convert Excel to TXT</h1>
-
+  <p>Progress time has now been reduced from 5 seconds to 3 seconds.</p>
   <!-- Drag & Drop Area -->
   <div id="drop-zone">
     <i class="icon-upload"></i>
@@ -202,12 +202,12 @@
       progressBarContainer.style.display = 'block';
       progressBar.style.width = '0%';
 
-      setTimeout(() => progressBar.style.width = '33.33%', 1600);
-      setTimeout(() => progressBar.style.width = '66.66%', 3300);
+      setTimeout(() => progressBar.style.width = '33.33%', 1000);
+      setTimeout(() => progressBar.style.width = '66.66%', 2000);
       setTimeout(() => {
         progressBar.style.width = '100%';
         setTimeout(() => { progressBarContainer.style.display = 'none'; processFile(); }, 500);
-      }, 5000);
+      }, 3000);
     }
 
     function processFile() {

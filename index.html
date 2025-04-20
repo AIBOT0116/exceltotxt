@@ -46,6 +46,14 @@
       padding: 40px 20px;
     }
 
+    .update-banner {
+            background-color: var(--accent);
+            color: white;
+            text-align: center;
+            padding: 8px;
+            font-size: 14px;
+    }
+
     h1 {
       font-size: 2rem;
       margin-bottom: 20px;
@@ -155,12 +163,19 @@
       word-break: break-word;
       font-size: 0.95rem;
     }
+
+    @media (max-width: 600px) {
+            .update-banner {
+                font-size: 12px;
+                padding: 6px;
+            }
+    }
   </style>
 </head>
 
 <body>
+  <div class="update-banner">Update: Faster conversion - now 3s instead of 5s!</div>
   <h1>Convert Excel to TXT</h1>
-  <p>Progress time has now been reduced from 5 seconds to 3 seconds.</p>
   <!-- Drag & Drop Area -->
   <div id="drop-zone">
     <i class="icon-upload"></i>

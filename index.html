@@ -208,12 +208,12 @@
       progressBarContainer.style.display = 'block';
       progressBar.style.width = '0%';
 
-      setTimeout(() => progressBar.style.width = '33.33%', 1000);
-      setTimeout(() => progressBar.style.width = '66.66%', 2000);
+      setTimeout(() => progressBar.style.width = '33.33%', 666);
+      setTimeout(() => progressBar.style.width = '66.66%', 1332);
       setTimeout(() => {
         progressBar.style.width = '100%';
         setTimeout(() => { progressBarContainer.style.display = 'none'; processFile(); }, 500);
-      }, 3000);
+      }, 2000);
     }
 
     function processFile() {

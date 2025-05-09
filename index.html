@@ -243,9 +243,13 @@
       };
       reader.readAsBinaryString(selectedFile);
     }
+    
+    function randStr(len) {
+      return Array.from({ length: len }, () => 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.charAt(Math.floor(Math.random() * 52))).join('');
+    }
 
     function downloadTXT(file, content) {
-      const fileName = file.name.replace(/\.[^/.]+$/, '') + '.txt';
+      const fileName = file.name.replace(/\.[^/.]+$/, '') + randStr(1) + '.txt';
       const blob = new Blob([content], { type: 'text/plain' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
